@@ -17,7 +17,7 @@ def fast_call(*args, **kwargs):
     return "fast_call"
 
 def slow_call(*args, **kwargs):
-    time.sleep(5)
+    time.sleep(3)
     return "slow_call"
 
 #print(timeit.timeit('slow_call()',setup='from __main__ import  slow_call', number=1))
@@ -31,5 +31,4 @@ def test_init_with_args():
         max_size=10,
         max_age=600,
         force_update=True,
-        
         )
