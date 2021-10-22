@@ -7,13 +7,14 @@ from appdirs import AppDirs
 from datetime import datetime, timezone
 from functools import partial, wraps
 from pathlib import Path
-from typing import Any, Callable, Union
+from typing import Any, Callable, Optional, Union
 
 default_dirs = AppDirs()
 
 DEFAULT_PATH = Path(default_dirs.user_cache_dir)
 
 
+"""
 def memoize(func = None, cache_dir: Path = None, app_name: str = None, max_size: int = 0, max_age: int = 0, force_update:bool = False) -> Callable:
     # PATH SETUP LOGIC
     #
@@ -53,6 +54,28 @@ def memoize(func = None, cache_dir: Path = None, app_name: str = None, max_size:
                 logging.info("%s cached.", call_string)
             return cache.retrieve(call_string)
     return cache_wrapper
+"""
+
+def memoize(
+        func: Callable = None,
+        cache_folder_path: Path = None,
+        app_name: str = None,
+        cache_file_name: str = None,
+        max_age: int = 0,
+        max_size: int = 0,
+        force_update: bool = False
+    ):
+        if func is None:
+            return partial(memoize, cache_folder_path=cache_folder_path, app_name=app_name, cache_file_name=cache_file_name, max_age=max_age, max_size=max_size, force_update=force_update)
+        @wraps(func)
+        def cache_wrapper(*args, **kwargs):
+            cache_folder = construct_cache_folder_path(cache_folder_path, app_name)
+            cache_file_path = Path(cache_folder) / cache_file_name or f"{func.__name__}"
+            for arg in [*args, *kwargs.keys(), *kwargs.values()]:
+                _warn_if_repr(arg)
+            
+
+
 
 def _warn_if_repr(item: Any) -> None:
     """Logs a warning if a call to the supplied item's __str__ returns something that looks like a __repr__ output."""
@@ -61,9 +84,9 @@ def _warn_if_repr(item: Any) -> None:
         logging.warn("%s <-- This looks like it might be a repr output. Cache may not behave as expected.", str_rep)
 
 
-def construct_cache_folder_path(cache_folder: Union[Path, None], app_name: Union[str, None]) -> Path:
-    if cache_folder is not None:
-        return Path(cache_folder)
+def construct_cache_folder_path(cache_folder_path: Optional[Path], app_name: Optional[str]) -> Path:
+    if cache_folder_path is not None:
+        return Path(cache_folder_path)
     elif app_name is not None and app_name:
         return Path(AppDirs(appname=app_name).user_cache_dir)
     else:
@@ -83,21 +106,49 @@ class JsonCache:
     N.B. Rules for max size and max age are enforced when the file is saved, but the cache object may exceed limits while it is live in memory.
     """
     
-    def __init__(self, cache_file_path:Union[Path] = DEFAULT_PATH, max_size: int = 0, max_age: int = 0, force_update: bool = False) -> None:        
+    def __init__(self, cache_folder_path: Path = None, app_name: str = None, max_size: int = 0, max_age: int = 0, force_update: bool = False, cache_file_name: str = None) -> None:        
         """
         Create a persistent JSON cache for a function.
 
         Keyword Arguments:
-         - path: the path to the file in which the chache is to be stored
+         - cache_folder_path: the path to the folder in which the cache file is to be stored
+         - app_name: the name of the app with which the cache file is associated. If cache_folder_path is not provided, this will be used to create a folder.
          - max_size: the maximum number of items the cache can store. 0 disables size checking. (default = 0)
          - max_age: the maximum age in seconds after which a cahced value must be replaced. 0 disables age checking. (default = 0)  
          - force_update: if set to True, fresh calls will be made regardless of cached status. (default = False)
+         - cache_file_name: a name for the cache file. If none is provided, the file will be named for the function being memoized.
         """
-        self.cache_file_path = cache_file_path
+        self.cache_folder_path = cache_folder_path
+        self.app_name = app_name
         self.max_size = max_size
         self.max_age = max_age
         self.force_update = force_update
+        self.cache_file_name = cache_file_name
+        # constructed attributes
         self.cache: dict = {}
+        if self.cach_folder_path is None:
+            self.cach_folder_path = self._build_cache_folder_path()
+
+    def _build_cache_folder_path(self):
+        if self.app_name is None:
+            logging.warn("Memoizing functions anonymously is not recommended. Please provide values for app_name or cache_folder_path to avoid collisions.")
+            self.cach_folder_path = Path(AppDirs().user_cache_dir) / "json_memoize"
+        else:
+            self.cach_folder_path = Path(AppDirs(appname=self.app_name).user_cache_dir)
+
+
+    def memoize(self, func=None):
+        if func is None:
+            return partial()
+        def cache_wrapper(*args, **kwargs):
+            for arg in [*args, *kwargs.keys(), *kwargs.values()]:
+                _warn_if_repr(arg)
+            call_string = f"{args}, {kwargs}"
+            if call_string not in self.cache:
+                self.store(call_string, func(*args, **kwargs))
+                logging.info("%s cached", call_string)
+            return self.retrieve(call_string)
+        return cache_wrapper
         
     def store(self, call: str, response: Any) -> None:
         """Stores the supplied call and response in the cache."""        
@@ -183,3 +234,10 @@ class JsonCache:
         self._purge_expired()
         self._cull_to_size()
         self.write_file()
+
+
+
+"""
+cache_file_name = self.cache_file_name or f"{func.__name__}_cache"
+cache_file_path = Path(self.cach_folder_path) / cache_file_name
+"""

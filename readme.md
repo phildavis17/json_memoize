@@ -4,12 +4,12 @@
 json_memoize is a straightforward tool for light-duty persistent memoization, created with APIs in mind. It stores the arguments passed to a function and that function call's returned value in a dict, and writes that dict's contents to disk in a .json file.
 
 **Arguments at a glance**
-- `max_age` sets the maximum allowed age in seconds before a cached entry is considered invalid.
-- `max_size` sets the maximum number of entries that can be stored in the cache.
-- `force_update` overwrites cached values.
-- `cache_folder_path` sets the location of the associated .json file.
-- `app_name` if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
-- 
+- `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
+- `max_size` - sets the maximum number of entries that can be stored in the cache.
+- `force_update` - overwrites cached values.
+- `cache_folder_path` - sets the location of the associated .json file.
+- `app_name` - if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
+- `cache_file_name` - manually sets the name of the cache file.
 
 ## Requirements
  - Python 3.8.5+
