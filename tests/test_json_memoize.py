@@ -10,7 +10,7 @@
 import time
 import timeit
 
-from json_memoize import JsonCache, memoize
+from src.json_memoize import JsonCache, memoize
 from pathlib import Path
 
 def fast_call(*args, **kwargs):

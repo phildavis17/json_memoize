@@ -28,6 +28,8 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
 
 Add the `@memoize` decorator to memoize it.
 ```
+from json_memoize import memoize
+
 @memoize
 def slow_api_call(arg_1:str, arg_2: str) -> str:
     response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")

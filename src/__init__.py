@@ -1,1 +1,1 @@
-from json_memoize import memoize
+from json_memoize import memoizegit
