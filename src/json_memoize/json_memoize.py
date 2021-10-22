@@ -13,13 +13,13 @@ from appdirs import AppDirs
 
 
 def memoize(
+        func: Callable = None,
         max_age: int = 0,
         max_size: int = 0,
         force_update: bool = False,
         app_name: str = None,
         cache_folder_path: Path = None,        
-        cache_file_name: str = None,
-        func: Callable = None
+        cache_file_name: str = None        
     ):
         if func is None:
             return partial(memoize, cache_folder_path=cache_folder_path, app_name=app_name, cache_file_name=cache_file_name, max_age=max_age, max_size=max_size, force_update=force_update)
