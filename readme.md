@@ -33,15 +33,14 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
     response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
     return response.text
 ```
-If the function is called again with the same arguments, the resulting value will be retrieved from the cache.
+If the function is called again with the same arguments, the resulting value will be retrieved from the cache without executing the function.
 
 ### max_age
 If you don't want to keep data that's too old, you can set a max age. 
 ```
 @memoize(max_age=600)
 def slow_api_call(arg_1:str, arg_2: str) -> str:
-    response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
-    return response.text
+    ...
 ```
 The age of an entry is determined from the time it was first added to the cache. If the difference between that time and the current time exceeds the `max_age` value, the cached value will be overwritten with a fresh one. Entries that have exceeded `max_age` will not be written to disk. If `max_age` is not set, cache entries will not expire.
 **Note:** `max_age` is in seconds. Consider creating variables for measures of time that are inconvenient or unclear when written in seconds, e.g.:
@@ -55,8 +54,7 @@ If you don't want to cache too many entries, you can set a maximum number of ent
 ```
 @memoize(max_size=10)
 def slow_api_call(arg_1:str, arg_2: str) -> str:
-    response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
-    return response.text
+    ...
 ```
 If max_size is set, json_memoize will delete cache entries from oldest to youngest until it meets the specified size limit before it saves the file to disk. As with max_age, the age of an entry is determined by the time at which it was first added to the cache, not when it was most recently used. 
 **Note:** The size limit is only enforced when the cache file is being written. While the JsonCache object is live in memory, the limit can be exceeded.
@@ -66,8 +64,7 @@ If something in your ecosystem has changed and you want to force the cached valu
 ```
 @memoize(force_update=True)
 def slow_api_call(arg_1:str, arg_2: str) -> str:
-    response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
-    return response.text
+    ...
 ```
 If `force_update` is `True`, all entries in the cache will be overwritten, even if they have not yet reached `max_age`.
 
