@@ -1,0 +1,1 @@
+from json_memoize import memoize

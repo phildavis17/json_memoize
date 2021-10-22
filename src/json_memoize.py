@@ -4,22 +4,22 @@
 import json
 import logging
 
-from appdirs import AppDirs
-
 from datetime import datetime, timezone
 from functools import partial, wraps
 from pathlib import Path
 from typing import Any, Callable, Optional
 
+from appdirs import AppDirs
+
 
 def memoize(
-        func: Callable = None,
-        cache_folder_path: Path = None,
-        app_name: str = None,
-        cache_file_name: str = None,
         max_age: int = 0,
         max_size: int = 0,
-        force_update: bool = False
+        force_update: bool = False,
+        app_name: str = None,
+        cache_folder_path: Path = None,        
+        cache_file_name: str = None,
+        func: Callable = None
     ):
         if func is None:
             return partial(memoize, cache_folder_path=cache_folder_path, app_name=app_name, cache_file_name=cache_file_name, max_age=max_age, max_size=max_size, force_update=force_update)
@@ -135,6 +135,7 @@ class JsonCache:
             self._purge_n_oldest(len(self.cache) - self.max_size)
     
     def write_file(self) -> None:
+        """Writes the contents of the cahce to a json file."""
         if not self.cache_file_path.parent.exists():
             self.cache_file_path.parent.mkdir(parents=True)
         with open(self.cache_file_path, "w") as cache_file:
@@ -159,7 +160,7 @@ class JsonCache:
         return len(self.cache)
 
     def __repr__(self) -> str:
-        return f"<JsonCache Object {hex(id(self))} storing {len(self)} items>"
+        return f"<JsonCache object at {hex(id(self))} storing {len(self)} items>"
 
     def __str__(self) -> str:
         return str(self.cache)
@@ -172,3 +173,28 @@ class JsonCache:
         self._purge_expired()
         self._cull_to_size()
         self.write_file()
+
+
+class JsonMemoize:
+    """UNDER DEVELOPMENT"""
+    def __init__(
+        self,
+        app_name: str = None,
+        cache_folder_path: Path = None,        
+        cache_file_name: str = None,
+        max_age: int = None,
+        max_size: int = None,
+        force_update: bool = None
+    ) -> None:
+        self.app_name = app_name
+        self.cache_folder_path = cache_folder_path
+        self.cache_file_name = cache_file_name
+        self.max_age = max_age
+        self.max_size = max_size
+        self.force_update = force_update
+        #construct a partial of memoize using supplied values
+        self.passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
+        #self.memoize = partial(memoize, **passed_args)
+
+    def memoize(self):
+        return partial(memoize, **self.passed_args)

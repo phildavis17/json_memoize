@@ -80,11 +80,11 @@ If a value is provided for `app_name`, json_memoize will use this value to name 
 If a `cache_folder` argument is supplied to the decorator, it will store cache files in that folder. **Note:** if `cache_folder` is supplied, it will overrule `app_name`.
 
 ### Default folder location
-**Warning:** Not recommended
+**Warning:** Not recommended!
 
 If neither `cache_folder` nor `app_name` is provided, json_memoize will use its default folder name, yielding a folder structure like ".cache/json_memoize/"
 
-This is not recommended, as intermingling cache files from multiple apps risks name collisions, which could cause apps to behave unpredictably. 
+This is not recommended, as intermingling cache files from multiple apps increases the risk of file name collisions, which could cause apps to behave unpredictably.
 
 ## Naming Cache Files
 By default, json_memoize will create each cache file using the name of the function being memoized, e.g.:
@@ -106,7 +106,7 @@ If a value is provided for `cache_file_name`, json_memoize will instead use this
 ### Storage
 When a call is made to a memoized function, json_memoize will generate a string from the passed arguments, and use that string as the key in its internal cache dictionary. The value returned by the call is stored as the associated value. Writing this dict to disk is accomplished using `json.dump()`. Seperate cache files are made for each memoized function.
 
-**Warning:** It is assumed here that @memoize will be invoked in situations where both the arguments and the returned value of a function have consistent, unambiguous string representations. Passing arguments with unreliable string representation will cause the cache to behave unpredictably. json_memoize will log a warning if it detects something that looks like a repr() output in an incoming argument. Also, once again, do not pass security-relevant information to memoized functions.
+**Warning:** It is assumed here that @memoize will be invoked in situations where both the arguments and the returned value of a function have consistent, unambiguous string representations. Passing arguments with unreliable string representation will cause the cache to behave unpredictably. json_memoize will log a warning if it detects something that looks like a repr() output that points to a memory address in an incoming argument. Also, once again, do not pass security-relevant information to memoized functions.
 
 ### Performance
-json_memoize is intended to be performant relative to a slow API call, and has not been optimized further than that. If `max_size` is exceeded, the entries in the dict will be sorted so the oldest ones can be dropped. Setting aside hard drive performance, this sorting operation is the most costly step of the process.
+json_memoize is intended to be performant relative to a slow API call, and has not been optimized further than that. If `max_size` is exceeded, the entries in the dict are sorted so the oldest ones can be dropped. Setting aside hard drive performance, this sorting operation is the most costly step of the process, and it occurs every time the cahce file is saved.
