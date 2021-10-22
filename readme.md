@@ -6,7 +6,7 @@ json_memoize is a straightforward tool for light-duty persistent memoization, cr
 **Arguments at a glance**
 - `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
 - `max_size` - sets the maximum number of entries that can be stored in the cache.
-- `force_update` - overwrites cached values.
+- `force_update` - overwrites cached values with fresh ones.
 - `cache_folder_path` - sets the location of the associated .json file.
 - `app_name` - if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
 - `cache_file_name` - manually sets the name of the cache file.
@@ -33,6 +33,7 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
     response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
     return response.text
 ```
+If the function is called again with the same arguments, the resulting value will be retrieved from the cache.
 
 ### max_age
 If you don't want to keep data that's too old, you can set a max age. 
@@ -71,7 +72,7 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
 If `force_update` is `True`, all entries in the cache will be overwritten, even if they have not yet reached `max_age`.
 
 ## Setting the Cache Folder
-To reduce the likelihood of name collisions, json_memoize attempts to store its cache files in named folders. There are ways to specify where this folder is located.
+To reduce the likelihood of name collisions, json_memoize attempts to store its cache files in named folders. There are multiple ways to specify where this folder is located.
 
 ### Automatic folder creation using app_name
 If a value is provided for `app_name`, json_memoize will use this value to name a new folder within the operating systems preferred user cache folder. e.g.:
