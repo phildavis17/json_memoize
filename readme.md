@@ -12,7 +12,7 @@ json_memoize is a straightforward tool for light-duty persistent memoization, cr
 - `cache_file_name` - manually sets the name of the cache file.
 
 
-## Basic Useage
+## Basic Use
 Import and add the decorator `@memoize` to memoize a function.
 
 **Warning:** json_memoize stores arguments passed to memoized functions in a plain text format. Do not pass your API key, or any other sensitive information, to memoized functions.
