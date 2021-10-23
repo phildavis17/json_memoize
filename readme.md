@@ -1,7 +1,7 @@
 # JSON Memoize
 
 ## What is this?
-json_memoize is a straightforward tool for light-duty persistent memoization, created with APIs in mind. It stores the arguments passed to a function and that function call's returned value in a dict, and writes that dict's contents to disk in a .json file.
+json_memoize is a straightforward tool for light-duty persistent memoization, created with API calls in mind. It stores the arguments passed to a function and that function call's returned value in a dict, and writes that dict's contents to disk in a .json file.
 
 **Arguments at a glance**
 - `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
@@ -11,11 +11,9 @@ json_memoize is a straightforward tool for light-duty persistent memoization, cr
 - `app_name` - if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
 - `cache_file_name` - manually sets the name of the cache file.
 
-## Requirements
- - Python 3.8.5+
 
 ## Basic Useage
-Add the decorator `@memoize` to memoize a function.
+Import and add the decorator `@memoize` to memoize a function.
 
 **Warning:** json_memoize stores arguments passed to memoized functions in a plain text format. Do not pass your API key, or any other sensitive information, to memoized functions.
 
@@ -71,7 +69,7 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
 If `force_update` is `True`, all entries in the cache will be overwritten, even if they have not yet reached `max_age`.
 
 ## Setting the Cache Folder
-To reduce the likelihood of name collisions, json_memoize attempts to store its cache files in named folders. There are multiple ways to specify where this folder is located.
+To reduce the likelihood of name collisions, json_memoize stores its cache files in named folders. There are multiple ways to specify where this folder is located.
 
 ### Automatic folder creation using app_name
 If a value is provided for `app_name`, json_memoize will use this value to name a new folder within the operating systems preferred user cache folder. e.g.:
