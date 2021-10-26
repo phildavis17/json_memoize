@@ -1,9 +1,15 @@
 # JSON Memoize
 
-## What is this?
-json_memoize is a straightforward tool for light-duty persistent memoization, created with API calls in mind. It stores the arguments passed to a function and that function call's returned value in a dict, and writes that dict's contents to disk in a .json file.
+## What this is
+Are you pulling repetitive information from a slow API? json_memoize may be able to help.
+
+json_memoize is a straightforward tool for persistent memoization, created with API calls in mind. When you attach the included decorator to a function, it will store the arguments passed to that function and the value the function returns in a JSON file. If the function is called with the same arguments, json_memoize will retrieve the return value from the file rather than running the function again.
+
+## What this isn't
+json_memoize is intended for light-duty applications. It's not thread safe, so it's not a good fit for large-scale operations. It doesn't do anything to encrypt or obfuscate the data it stores, so it's not the tool for security-sensitive situations. It's intended to be faster than an API call and isn't optimized any further than that, so if you're looking for break-neck speed, this may not be the tool for you. Since it is based around JSON, it expects to be used with data that can be reliably represented with text. If you are passing types with ambiguous string representations, json_memoize probably won't behave reliably.
 
 **Arguments at a glance**
+When `@memoize` is invoked, you can pass it a few arguments:
 - `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
 - `max_size` - sets the maximum number of entries that can be stored in the cache.
 - `force_update` - overwrites cached values with fresh ones.
@@ -33,7 +39,7 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
     response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
     return response.text
 ```
-If the function is called again with the same arguments, the resulting value will be retrieved from the cache without executing the function.
+If the function is called again with the same arguments, the resulting value will be retrieved from the cache file without executing the function.
 
 ### max_age
 If you don't want to keep data that's too old, you can set a max age. 
