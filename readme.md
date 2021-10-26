@@ -8,16 +8,6 @@ json_memoize is a straightforward tool for persistent memoization, created with 
 ## What this isn't
 json_memoize is intended for light-duty applications. It's not thread safe, so it's not a good fit for large-scale operations. It doesn't do anything to encrypt or obfuscate the data it stores, so it's not the tool for security-sensitive situations. It's intended to be faster than an API call and isn't optimized any further than that, so if you're looking for break-neck speed, this may not be the tool for you. Since it is based around JSON, it expects to be used with data that can be reliably represented with text. If you are passing types with ambiguous string representations, json_memoize probably won't behave reliably.
 
-**Arguments at a glance**
-When `@memoize` is invoked, you can pass it a few arguments:
-- `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
-- `max_size` - sets the maximum number of entries that can be stored in the cache.
-- `force_update` - overwrites cached values with fresh ones.
-- `cache_folder_path` - sets the location of the associated .json file.
-- `app_name` - if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
-- `cache_file_name` - manually sets the name of the cache file.
-
-
 ## Basic Use
 Import and add the decorator `@memoize` to memoize a function.
 
@@ -40,6 +30,16 @@ def slow_api_call(arg_1:str, arg_2: str) -> str:
     return response.text
 ```
 If the function is called again with the same arguments, the resulting value will be retrieved from the cache file without executing the function.
+
+**Arguments at a glance**
+
+When `@memoize` is invoked, you can pass it a few arguments:
+- `max_age` - sets the maximum allowed age in seconds before a cached entry is considered invalid.
+- `max_size` - sets the maximum number of entries that can be stored in the cache.
+- `force_update` - overwrites cached values with fresh ones.
+- `cache_folder_path` - sets the location of the associated .json file.
+- `app_name` - if no `cache_folder_path` is provided, `app_name` is used to create a folder in the default user cache folder.
+- `cache_file_name` - manually sets the name of the cache file.
 
 ### max_age
 If you don't want to keep data that's too old, you can set a max age. 
