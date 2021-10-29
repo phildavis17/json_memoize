@@ -192,9 +192,7 @@ class JsonMemoize:
         self.max_age = max_age
         self.max_size = max_size
         self.force_update = force_update
+        
         #construct a partial of memoize using supplied values
-        self.passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
-        #self.memoize = partial(memoize, **passed_args)
-
-    def memoize(self):
-        return partial(memoize, **self.passed_args)
+        passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
+        self.memoize = partial(memoize, **passed_args)
