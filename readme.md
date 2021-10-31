@@ -16,7 +16,7 @@ Import and add the decorator `@memoize` to memoize a function.
 Here's a slow api call:
 ```
 def slow_api_call(arg_1:str, arg_2: str) -> str:
-    response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
+    response = requests.get(f"https://wowthistakesforever.slow/api/arg-1={arg_1}&arg-2={arg_2}")
     return response.text
 ```
 
@@ -26,7 +26,7 @@ from json_memoize import memoize
 
 @memoize
 def slow_api_call(arg_1:str, arg_2: str) -> str:
-    response = requests.get(f"https://wowthistakesforever.slow/arg-1={arg_1}&arg-2={arg_2}")
+    response = requests.get(f"https://wowthistakesforever.slow/api/arg-1={arg_1}&arg-2={arg_2}")
     return response.text
 ```
 If the function is called again with the same arguments, the resulting value will be retrieved from the cache file without executing the function.
