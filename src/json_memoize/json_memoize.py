@@ -30,6 +30,9 @@ def memoize(
             cache_file_path = Path(cache_folder) / file_name
             for arg in [*args, *kwargs.keys(), *kwargs.values()]:
                 _warn_if_repr(arg)
+                """
+                if "__str__" in dir(object)
+                """
             call_string = f"{args}, {kwargs}"
             with JsonCache(cache_file_path, max_size=max_size, max_age=max_age, force_update=force_update) as cache:
                 if call_string not in cache:
@@ -195,4 +198,9 @@ class JsonMemoize:
         
         #construct a partial of memoize using supplied values
         passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
-        self.memoize = partial(memoize, **passed_args)
+        
+        @wraps(func)
+        def memoize(self, func):
+            return partial(memoize)
+            
+            self.memoize = partial(memoize, **passed_args)
