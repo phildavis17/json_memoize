@@ -8,6 +8,8 @@ json_memoize is a straightforward tool for persistent memoization, created with 
 ## What this isn't
 json_memoize is intended for light-duty applications. It's not thread safe, so it's not a good fit for large-scale operations. It doesn't do anything to encrypt or obfuscate the data it stores, so it's not the tool for security-sensitive situations. It's intended to be faster than an API call and isn't optimized any further than that, so if you're looking for break-neck speed, this may not be the tool for you. Since it is based around JSON, it expects to be used with data that can be reliably represented with text. If you are passing types with ambiguous string representations, json_memoize probably won't behave reliably.
 
+If redis or dogpile seem like overkill for your project, json_memoize offers a simple, fast to set up alternative.
+
 ## Basic Use
 Import and add the decorator `@memoize` to memoize a function.
 
@@ -106,6 +108,20 @@ This will create a file called "slow_api_call_cahce.json".
 ### Setting a custom file name with cahce_file_name
 If a value is provided for `cache_file_name`, json_memoize will instead use this value to name the cache file.
 
+## Setting Default Values
+If you are memoizing multiple functions, it can become tedious to supply the same values over and over again. By importing and instantiating the `Json_Memoize` class, you can establish default values.
+
+```
+from json_memoize import Json_Memoize
+
+jm = Json_Memoize(app_name = "my_cool_app", max_age = 60)
+memoize = jm.memoize_with_defaults
+
+@memoize(max_age = 10)
+def slow_api_call(arg_1:str, arg_2: str) -> str:
+    ...
+```
+Values supplied to the Json_Memoize object at instantiation will be used as default values, but will be superceded by arguments supplied to the `@memoize` decorator when it is used. In the above example, the decorated function will use `"my_cool_app"` for the `app_name` value, since no `app_name` was provided to the decorator, but the `10` for `max_age` overrules the `60` used when the class was instantiated. This provides an easy way to set up mutliple memoized functions with useful values, while maintaining the flexibility to customize each function as needed.
 
 ## Storage and Performance Details
 

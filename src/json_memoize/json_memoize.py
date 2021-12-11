@@ -1,4 +1,4 @@
-# License info TK
+# MIT License
 # Phil Davis, 2021
 
 import json
@@ -11,7 +11,6 @@ from typing import Any, Callable, Optional
 
 from appdirs import AppDirs
 
-
 def memoize(
         func: Callable = None,
         max_age: int = 0,
@@ -20,7 +19,7 @@ def memoize(
         app_name: str = None,
         cache_folder_path: Path = None,        
         cache_file_name: str = None        
-    ):
+    ) -> Any:
         if func is None:
             return partial(memoize, cache_folder_path=cache_folder_path, app_name=app_name, cache_file_name=cache_file_name, max_age=max_age, max_size=max_size, force_update=force_update)
         @wraps(func)
@@ -179,15 +178,18 @@ class JsonCache:
 
 
 class JsonMemoize:
-    """UNDER DEVELOPMENT"""
+    """
+    A class used to establish default values for memoizing functions.
+    Arguments supplied here will be used as defaults if no value is supplied to the decorator.
+    """
     def __init__(
         self,
         app_name: str = None,
         cache_folder_path: Path = None,        
         cache_file_name: str = None,
-        max_age: int = None,
-        max_size: int = None,
-        force_update: bool = None
+        max_age: int = 0,
+        max_size: int = 0,
+        force_update: bool = False
     ) -> None:
         self.app_name = app_name
         self.cache_folder_path = cache_folder_path
@@ -197,10 +199,42 @@ class JsonMemoize:
         self.force_update = force_update
         
         #construct a partial of memoize using supplied values
-        passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
+        #passed_args = {k: v for k, v in self.__dict__.items() if v is not None}
         
-        @wraps(func)
-        def memoize(self, func):
-            return partial(memoize)
-            
-            self.memoize = partial(memoize, **passed_args)
+    def memoize_with_defaults(
+        self,
+        func: Callable = None,
+        max_age: int = None,
+        max_size: int = None,
+        force_update: bool = None,
+        app_name: str = None,
+        cache_folder_path: Path = None,
+        cache_file_name: str = None,
+    ) -> Any:
+        """
+        Memoize the decorated functions using the default values with which this object was instantiated.
+        """
+        if max_age is None:
+            max_age = self.max_age
+        if max_size is None:
+            max_size = self.max_size
+        if force_update is None:
+            force_update = self.force_update
+        if app_name is None:
+            app_name = self.app_name
+        if cache_folder_path is None:
+            cache_folder_path = self.cache_folder_path
+        if cache_file_name is None:
+            cache_file_name = self.cache_file_name
+
+        return memoize(
+            func,
+            max_age = max_age,
+            max_size = max_size,
+            force_update = force_update,
+            app_name = app_name,
+            cache_folder_path = cache_folder_path, 
+            cache_file_name = cache_file_name,
+        )
+
+
